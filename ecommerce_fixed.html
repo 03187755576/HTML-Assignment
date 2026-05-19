@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vogue &amp; Valor | Premium Apparel</title>
+    <style>
+        :root {
+            --accent: #c5a059;
+            --muted: #767676;
+            --bg: #ffffff;
+        }
+
+        /* WCAG FIX: Removed *:focus { outline: none } — keyboard focus must be visible (WCAG 2.4.7) */
+        *:focus {
+            outline: 3px solid #c5a059;
+            outline-offset: 3px;
+        }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            margin: 0;
+            color: #18181b;
+            line-height: 1.6;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 0;
+            background: #000;
+            color: #fff;
+            padding: 10px 20px;
+            z-index: 1000;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .skip-link:focus { top: 0; }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        header {
+            padding: 30px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f4f4f5;
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 50;
+        }
+
+        /* WCAG FIX: logo changed from div to button */
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            letter-spacing: 3px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: 'Playfair Display', serif;
+            color: #18181b;
+            padding: 0;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* WCAG FIX: nav-item changed from div to button */
+        /* WCAG FIX: color #a1a1aa -> #595959 (7:1 contrast on white, passes AA) */
+        .nav-item {
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #595959;
+            transition: color 0.3s;
+            background: none;
+            border: none;
+            font-family: 'Playfair Display', serif;
+            padding: 0;
+        }
+        .nav-item:hover { color: #000; }
+
+        .hero {
+            height: 70vh;
+            background: #fdfcf7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 10%;
+        }
+
+        /* WCAG FIX: was h3, now h2 — correct heading hierarchy */
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        /* WCAG FIX: color #a1a1aa -> #767676 (4.54:1 contrast on white, passes AA) */
+        .hero p {
+            color: var(--muted);
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+
+        /* WCAG FIX: was h4, now h3 — correct heading hierarchy */
+        .section-title {
+            text-align: center;
+            padding: 60px 0 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #18181b;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            padding: 0 5%;
+            margin-bottom: 80px;
+        }
+
+        .product-card { position: relative; }
+
+        .product-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.5s;
+            display: block;
+        }
+        .product-card img:hover { transform: scale(1.02); }
+
+        .product-info { padding: 15px 0; }
+
+        /* WCAG FIX: #c5a059 on white = 2.7:1 (fails AA) -> #7a5e1a on white = 5.7:1 (passes AA) */
+        .price {
+            color: #7a5e1a;
+            font-weight: bold;
+        }
+
+        /* WCAG FIX: footer text #71717a -> #b0b0b0 (4.6:1 on #18181b, passes AA) */
+        .footer {
+            background: #18181b;
+            color: #b0b0b0;
+            padding: 80px 5%;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            font-size: 0.9rem;
+        }
+
+        /* WCAG FIX: was h5, now h4 — correct heading hierarchy */
+        .footer h4 {
+            color: #ffffff;
+            margin-bottom: 20px;
+            margin-top: 0;
+            font-size: 1rem;
+        }
+
+        /* WCAG FIX: footer links #f0c97a on #18181b = 7.2:1 (passes AA) */
+        .footer a { color: #f0c97a; text-decoration: underline; }
+        .footer a:hover { color: #ffffff; }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 90%;
+            max-width: 500px;
+            padding: 40px;
+            position: relative;
+        }
+
+        /* WCAG FIX: close trigger changed from span to button */
+        .close-trigger {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            background: none;
+            border: none;
+            font-family: 'Playfair Display', serif;
+            color: #18181b;
+            line-height: 1;
+        }
+
+        .btn-black {
+            background: #000;
+            color: #fff;
+            padding: 15px 30px;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            margin-top: 20px;
+            font-family: 'Playfair Display', serif;
+        }
+        .btn-black:hover { background: #333; }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #18181b;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e4e4e7;
+            margin-top: 4px;
+            box-sizing: border-box;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* WCAG FIX: opacity:0 replaced with display:none — hidden content no longer leaks to AT */
+        .ghost-coupon {
+            display: none;
+            padding: 10px;
+            border: 1px dashed var(--accent);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WCAG FIX: href corrected from #main-inventory (missing anchor) to #main (WCAG 2.4.1) -->
+    <a href="#main" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <!-- WCAG FIX: h1 added as visually hidden — fixes Missing first level heading (WCAG 1.3.1, 2.4.6) -->
+        <h1 class="sr-only">Vogue &amp; Valor — Premium Apparel</h1>
+
+        <!-- WCAG FIX: div onclick replaced with button — keyboard accessible (WCAG 2.1.1, 4.1.2) -->
+        <button class="logo" onclick="location.reload()" aria-label="Vogue and Valor — return to homepage">
+            VOGUE &amp; VALOR
+        </button>
+
+        <nav aria-label="Main navigation">
+            <ul class="nav-links">
+                <!-- WCAG FIX: div nav-items replaced with buttons inside ul/li — semantic and keyboard accessible -->
+                <li>
+                    <button class="nav-item" onclick="openMod('cart')" aria-haspopup="dialog" aria-controls="mod-cart">
+                        Bag (0)
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" onclick="openMod('size')" aria-haspopup="dialog" aria-controls="mod-size">
+                        Size Guide
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" onclick="openMod('auth')" aria-haspopup="dialog" aria-controls="mod-auth">
+                        Account
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="main">
+
+        <section class="hero" aria-labelledby="hero-heading">
+            <div>
+                <!-- WCAG FIX: h3 -> h2 — correct hierarchy under sr-only h1 -->
+                <h2 id="hero-heading">The Equinox Collection</h2>
+                <p>Timeless silhouettes crafted from sustainably sourced Italian silk. Discover the intersection of comfort and high-fashion utility.</p>
+                <button class="btn-black" style="width: auto;" onclick="document.getElementById('catalog').scrollIntoView()">
+                    Shop Collection
+                </button>
+            </div>
+        </section>
+
+        <!-- WCAG FIX: h4 -> h3 — correct heading hierarchy -->
+        <h3 class="section-title" id="catalog">Featured Curations</h3>
+
+        <div class="grid">
+
+            <article class="product-card">
+                <!-- WCAG FIX: alt text added — fixes Missing alternative text (WCAG 1.1.1) -->
+                <img
+                    src="https://images.unsplash.com/photo-1539109132382-381bb3f1c2b5?auto=format&fit=crop&w=400&q=80"
+                    alt="Midnight Trench — full-length dark wool overcoat with structured shoulders and belt tie">
+                <div class="product-info">
+                    <span>Midnight Trench</span><br>
+                    <span class="price">$890.00</span>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <!-- WCAG FIX: alt text added — fixes Missing alternative text (WCAG 1.1.1) -->
+                <img
+                    src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80"
+                    alt="Ivory Pleated Trouser — wide-leg cream trousers with high waist and pressed centre pleats">
+                <div class="product-info">
+                    <span>Ivory Pleated Trouser</span><br>
+                    <span class="price">$450.00</span>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <!-- WCAG FIX: aria-label added — fixes Empty button error (WCAG 4.1.2) -->
+                <button
+                    style="width:100%; height:400px; background:#f9f9f9; border:none; cursor:pointer;"
+                    aria-label="Request Custom Order">
+                    <!-- WCAG FIX: aria-hidden on decorative SVG so screen readers skip it -->
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" aria-hidden="true" focusable="false">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                </button>
+                <div class="product-info">
+                    <span>Request Custom Order</span>
+                </div>
+            </article>
+
+        </div>
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div>
+            <!-- WCAG FIX: h5 -> h4 — correct heading hierarchy -->
+            <h4>Boutique Info</h4>
+            <p>1244 Madison Ave, New York<br>Monday - Friday: 10am - 7pm</p>
+        </div>
+        <div>
+            <h4>Support</h4>
+            <!-- WCAG FIX: 'click here' and 'read more' replaced with descriptive text (WCAG 2.4.4) -->
+            <p>For return policies, <a href="#">view our returns policy</a>.</p>
+            <p>For shipping updates, <a href="#">track your shipping update</a>.</p>
+        </div>
+        <div>
+            <h4>Newsletter</h4>
+            <!-- WCAG FIX: opacity:0 removed, display:none used instead (WCAG 1.3.1) -->
+            <div class="ghost-coupon" id="coupon-box" aria-live="polite">
+                <p style="color: var(--accent); margin: 0;">SECRET_CODE: VOGUE2026</p>
+                <button style="font-size: 0.6rem; padding: 5px;" aria-label="Copy coupon code VOGUE2026">Copy</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- CART MODAL -->
+    <!-- WCAG FIX: role, aria-modal, aria-labelledby added (WCAG 4.1.2, 2.1.2) -->
+    <div id="mod-cart" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+        <div class="modal-box">
+            <!-- WCAG FIX: span -> button with aria-label -->
+            <button class="close-trigger" onclick="cls('cart')" aria-label="Close bag dialog">&#x2715;</button>
+            <h2 id="cart-title">Your Selection</h2>
+            <div style="border-top: 1px solid #eee; padding: 20px 0;">
+                <p style="color: var(--muted);">Your bag is currently empty.</p>
+                <!-- WCAG FIX: label associated with input via for/id -->
+                <div class="form-group">
+                    <label for="promo-code">Gift Card or Promo Code</label>
+                    <input type="text" id="promo-code" placeholder="Enter code">
+                </div>
+            </div>
+            <button class="btn-black" onclick="cls('cart')">Proceed to Secure Pay</button>
+        </div>
+    </div>
+
+    <!-- SIZE GUIDE MODAL -->
+    <div id="mod-size" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="size-title">
+        <div class="modal-box">
+            <button class="close-trigger" onclick="cls('size')" aria-label="Close size guide dialog">&#x2715;</button>
+            <h2 id="size-title">Fit Consultant</h2>
+            <div style="margin: 20px 0;">
+                <!-- WCAG FIX: unique IDs, labels properly associated via for attribute -->
+                <!-- Fixes: Missing form label x2, Multiple form labels x2, Duplicate ID (WCAG 1.3.1, 3.3.2, 4.1.1) -->
+                <div class="form-group">
+                    <label for="usr-height">Your Height (cm)</label>
+                    <input type="number" id="usr-height" placeholder="180" min="100" max="250" aria-describedby="height-hint">
+                    <span id="height-hint" class="sr-only">Enter your height in centimetres, between 100 and 250</span>
+                </div>
+                <div class="form-group">
+                    <label for="usr-weight">Your Weight (kg)</label>
+                    <input type="number" id="usr-weight" placeholder="75" min="30" max="300" aria-describedby="weight-hint">
+                    <span id="weight-hint" class="sr-only">Enter your weight in kilograms, between 30 and 300</span>
+                </div>
+            </div>
+            <button class="btn-black" onclick="cls('size')">Calculate My Fit</button>
+        </div>
+    </div>
+
+    <!-- AUTH MODAL -->
+    <div id="mod-auth" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+        <div class="modal-box">
+            <button class="close-trigger" onclick="cls('auth')" aria-label="Close account login dialog">&#x2715;</button>
+            <h2 id="auth-title">Client Login</h2>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <!-- WCAG FIX: checkbox given an associated label -->
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" style="width: auto;">
+                    <span>Remember this device</span>
+                </label>
+            </div>
+            <!-- WCAG FIX: 'Identity Server Status: Ready' removed — internal technical info not for end users -->
+            <button class="btn-black" onclick="cls('auth')">Sign In</button>
+        </div>
+    </div>
+
+    <script>
+        // Track which element opened the modal so focus can return on close
+        var lastFocused = null;
+
+        function openMod(id) {
+            var modal = document.getElementById('mod-' + id);
+            lastFocused = document.activeElement;
+            modal.style.display = 'flex';
+            // WCAG FIX: move focus to first focusable element in modal on open (WCAG 2.4.3)
+            var focusable = modal.querySelectorAll(
+                'button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])'
+            );
+            if (focusable.length) focusable[0].focus();
+        }
+
+        function cls(id) {
+            var modal = document.getElementById('mod-' + id);
+            if (modal) modal.style.display = 'none';
+            // WCAG FIX: return focus to triggering element on close (WCAG 2.4.3)
+            if (lastFocused) {
+                lastFocused.focus();
+                lastFocused = null;
+            }
+        }
+
+        // WCAG FIX: Escape key closes open modal (WCAG 2.1.1 Keyboard)
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Escape') return;
+            var openModal = document.querySelector('.modal-overlay[style*="flex"]');
+            if (openModal) {
+                var id = openModal.id.replace('mod-', '');
+                cls(id);
+            }
+        });
+
+        // WCAG FIX: trap Tab focus inside open modal (WCAG 2.1.2 No Keyboard Trap)
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Tab') return;
+            var openModal = document.querySelector('.modal-overlay[style*="flex"]');
+            if (!openModal) return;
+            var focusable = Array.from(openModal.querySelectorAll(
+                'button, input, select, textarea, [href], [tabindex]:not([tabindex="-1"])'
+            ));
+            if (!focusable.length) return;
+            var first = focusable[0];
+            var last = focusable[focusable.length - 1];
+            if (e.shiftKey) {
+                if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+            } else {
+                if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+            }
+        });
+    </script>
+
+</body>
+</html>
